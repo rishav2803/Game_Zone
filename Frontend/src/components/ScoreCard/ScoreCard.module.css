@@ -1,0 +1,31 @@
+.container {
+  width: 80%;
+  margin-inline: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  color: #04114f;
+}
+.playing {
+  border-bottom: 3px solid #04114f;
+}
+.scoreCard {
+  padding: 1.5rem;
+  margin-right: 1rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+.userName {
+  font-size: 1.2rem;
+  text-transform: capitalize;
+  /* margin-right: 2rem; */
+}
+.symbol {
+  display: flex;
+  margin-top: 0.5rem;
+  align-items: center;
+  justify-content: center;
+}

@@ -1,0 +1,75 @@
+:root {
+  --cell-size: 100px;
+  --mark-size: calc(var(--cell-size) * 0.9);
+}
+
+.container {
+  width: 100%;
+  display: flex;
+  justify-content: space-around;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 2.5rem;
+}
+.grid_container {
+  display: grid;
+  margin-left: 1.3rem;
+  grid-template-columns: repeat(3, auto);
+}
+
+.reset {
+  background-color: #04114f;
+  margin-top: 3rem;
+  font-size: 1.5rem;
+  padding: 0.5rem 1.3rem;
+  border: none;
+  color: white;
+  z-index: 4;
+}
+
+.reset:hover {
+  cursor: pointer;
+}
+
+@media screen and (max-width: 400px) {
+  .grid_container {
+    display: grid;
+    margin-right: 1.6rem;
+    grid-template-columns: repeat(3, auto);
+  }
+}
+.grid_item {
+  width: var(--cell-size);
+  height: var(--cell-size);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #04114f;
+  border: 2px solid #04114f;
+  font-size: 10vmin;
+  background-color: transparent;
+}
+
+.grid_item:hover {
+  cursor: pointer;
+}
+
+.grid_item:first-child,
+.grid_item:nth-child(2),
+.grid_item:nth-child(3) {
+  border-top: none;
+}
+
+.grid_item:nth-child(3n + 1) {
+  border-left: none;
+}
+
+.grid_item:nth-child(3n + 3) {
+  border-right: none;
+}
+
+.grid_item:last-child,
+.grid_item:nth-child(7),
+.grid_item:nth-child(8) {
+  border-bottom: none;
+}
