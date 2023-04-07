@@ -4,7 +4,7 @@ import styles from "./Board.module.css"
     onClick:()=>void,
     disabled:boolean
   })=>{
-     return <button className={styles.grid_item} disabled={disabled} onClick={onClick}>{value}</button>
+    return <button className={`${styles.grid_item} ${value==="X"?styles.green:styles.grid_item}`} disabled={disabled} onClick={onClick}>{value}</button>
   }
 
   export default Cell;

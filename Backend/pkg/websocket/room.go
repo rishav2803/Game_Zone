@@ -9,13 +9,8 @@ type Room struct {
 	Unregister chan *Client
 	Clients    map[*Client]bool
 	Users      []User
-	test       Test
 	Broadcast  chan interface{}
 	length     int
-}
-
-type Test struct {
-	Users []User `json:"users"`
 }
 
 // This function will create a new room and return address to that room
@@ -25,10 +20,10 @@ func NewRoom() *Room {
 		Unregister: make(chan *Client),
 		Clients:    make(map[*Client]bool),
 		Broadcast:  make(chan interface{}),
-		test:       Test{},
 		length:     0,
 	}
 }
+
 func (room *Room) Start() {
 	for {
 		select {
@@ -38,8 +33,21 @@ func (room *Room) Start() {
 			fmt.Println("Size of Connection Pool: ", len(room.Clients))
 			break
 		case client := <-room.Unregister:
+			var updatedUsers []User
+			for _, user := range room.Users {
+				if user.ID != client.Conn {
+					updatedUsers = append(updatedUsers, user)
+				}
+			}
 			delete(room.Clients, client)
-			fmt.Println("Size of Connection Pool: ", len(room.Clients))
+			room.Users = updatedUsers
+			message := Message{Type: "user", Users: room.Users, Ready: false}
+			for client, _ := range room.Clients {
+				if err := client.Conn.WriteJSON(message); err != nil {
+					fmt.Println(err)
+					return
+				}
+			}
 			break
 		case message := <-room.Broadcast:
 			fmt.Println("Sending message to all clients in Pool")

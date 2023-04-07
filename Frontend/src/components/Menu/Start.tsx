@@ -12,9 +12,11 @@ const Start = () => {
   const [userSymbol, setUserSymbol] = useState("");
   const [isSelected, setIsSelected] = useState(false);
   const [isSymbolSelected, setIsSymbolSelected] = useState(false);
+
   const [isCreateGame, setIsCreateGame] = useState(false);
   const [isJoinGame, setIsJoinGame] = useState(false);
   const [isComputer, setIsComputer] = useState(false);
+
   const [optionSelected, isOptionSelected] = useState("");
   const [userName, setUserName] = useState("");
 
@@ -42,6 +44,11 @@ const Start = () => {
     setIsSymbolSelected(true);
   };
 
+  const exitHandler=(val:boolean)=>{
+    setIsSelected(val);
+    setIsSymbolSelected(val);
+  }
+
   return (
     <>
       <PlayerContext.Provider
@@ -63,7 +70,7 @@ const Start = () => {
           <JoinGame />
         )}
         {isComputer && isSymbolSelected && isSelected && isLoggedIn && (
-          <Computer />
+          <Computer  onExit={exitHandler}/>
         )}
       </PlayerContext.Provider>
     </>

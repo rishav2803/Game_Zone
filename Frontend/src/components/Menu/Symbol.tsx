@@ -26,7 +26,6 @@ const Symbol = ({onSymbol}) => {
           </div>
           <div className={styles.menu_container}>
             <ul className={styles.menu}>
-              <p className={styles.meta}>Select a symbol</p>
               <li className={styles.menu_item} onClick={symbolHandler}>X</li>
               <li className={styles.menu_item} onClick={symbolHandler}>O</li>
             </ul>

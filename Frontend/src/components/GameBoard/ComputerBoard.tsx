@@ -1,57 +1,49 @@
 import { useContext, useEffect, useState } from "react";
 import ScoreCard from "../ScoreCard/ScoreCard";
 import styles from "./Board.module.css";
-import Card from "../ui/Card";
 import Cell from "./Cell";
 import PlayerContext from "../../context/player-context";
 import Modal from "../ui/Modal";
-import {checkWinner} from "../../../utils/checkWinner";
-type Player="X"|"O"|"Both"|null;
-
-// const checkWinner=(squares:Player[])=>{
-//   const lines=[
-//     [0,1,2],
-//     [3,4,5],
-//     [6,7,8],
-//     [0,3,6],
-//     [1,4,7],
-//     [2,5,8],
-//     [0,4,8],
-//     [2,4,6],
-//   ];
-//   for (let i = 0; i < lines.length; i++) {
-//     const [a,b,c]=lines[i];
-//     if (squares[a] && squares[a]===squares[b] && squares[a]===squares[c]) {
-//       return squares[a];
-//     }
-//   }
-//   return null;
-// }
+import { checkWinner } from "../../../utils/checkWinner";
+import {useNavigate} from "react-router-dom";
 
 
-const ComputerBoard = () => {
+type Winner = {
+  bool?: boolean;
+  winner: string;
+};
+
+const ComputerBoard = ({onExit}) => {
   const ctx = useContext(PlayerContext);
   const [squares, setSquares] = useState(Array(9).fill(null));
   const [playerTurn, setPlayerTurn] = useState(true);
-  const symbol=ctx.userSymbol=="X"?"O":"X";
-  const [winner,setWinner]=useState<Player>(null);
+  const symbol = ctx.userSymbol == "X" ? "O" : "X";
+  const [winner, setWinner] = useState<Winner>({ bool: false, winner: "" });
 
-  
-  const reset=()=>{
+  const reset = () => {
     setSquares(Array(9).fill(null));
+    setWinner({
+      bool: false,
+      winner: "",
+    });
     setPlayerTurn(true);
-  }
+  };
 
-  const findIndex=()=>{
-    const emptyCells:number[]=[];
+  const exit = () => {
+    console.log(onExit);
+    onExit(false);
+  };
+
+  const findIndex = () => {
+    const emptyCells: number[] = [];
     //Make array of all the indices that are empty
-    squares.forEach((square,index) => {
-      if (square==null) {
+    squares.forEach((square, index) => {
+      if (square == null) {
         emptyCells.push(index);
       }
     });
     //randomly select the index from the array
-    const index=emptyCells[Math.floor(Math.random()*emptyCells.length)];
+    const index = emptyCells[Math.floor(Math.random() * emptyCells.length)];
     const newData = squares.map((val, i) => {
       if (i == index) {
         return symbol;
@@ -60,12 +52,12 @@ const ComputerBoard = () => {
     });
     setPlayerTurn(true);
     setSquares(newData);
-  }
+  };
 
-  if(playerTurn==false){
-    setTimeout(()=>{
+  if (playerTurn == false) {
+    setTimeout(() => {
       findIndex();
-    },1200)
+    }, 1200);
   }
 
   const setSquaresValue = (value: number) => {
@@ -79,21 +71,29 @@ const ComputerBoard = () => {
     setSquares(newData);
   };
 
-  useEffect(()=>{
-    const winner=checkWinner(squares);
+  useEffect(() => {
+    const winner = checkWinner(squares);
     if (winner) {
-      setWinner(winner);
+      setWinner({
+        bool: true,
+        winner: winner,
+      });
+    } else if (winner && squares.filter((square) => !square).length) {
+      setWinner({
+        bool: true,
+        winner: "both",
+      });
     }
-
-    if (!winner && squares.filter((square)=>!square).length) {
-      setWinner("Both");
-    }
-  },[squares])
+  }, [squares]);
 
   return (
-      <Card>
-        <ScoreCard currentlyPlaying={playerTurn} computerSymbol={symbol}></ScoreCard>
-        {winner && winner!=="Both"&& <Modal winner={winner}></Modal>}
+    <>
+      {winner.bool && <Modal winner={winner.winner}></Modal>}
+      <div className={styles.board_container}>
+        <ScoreCard
+          currentlyPlaying={playerTurn}
+          computerSymbol={symbol}
+        ></ScoreCard>
         <div className={styles.container}>
           <div className={styles.grid_container}>
             {Array(9)
@@ -103,17 +103,23 @@ const ComputerBoard = () => {
                   <Cell
                     key={i}
                     value={squares[i]}
-                    onClick={
-                      ()=>setSquaresValue(i)
-                    }
-                    disabled={playerTurn==true?false:true}
+                    onClick={() => setSquaresValue(i)}
+                    disabled={playerTurn == true ? false : true}
                   ></Cell>
                 );
               })}
           </div>
-        <button onClick={reset} className={styles.reset}>Reset</button>
+          <div className="btn_container">
+          <button onClick={reset} className={styles.reset}>
+            Reset
+          </button>
+          <button onClick={exit} className={styles.leave}>
+            Exit  
+          </button>
+          </div>
         </div>
-      </Card>
+      </div>
+    </>
   );
 };
 export default ComputerBoard;

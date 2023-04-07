@@ -1,5 +1,4 @@
 import Card from "../ui/Card";
-import Login from "./Login";
 import styles from "./Menu.module.css";
 
 const Menu = ({onSelect}) => {

@@ -1,9 +1,9 @@
 import ComputerBoard from "./GameBoard/ComputerBoard";
 
-const Computer = () => {
+const Computer = ({onExit}) => {
   return (
     <>
-      <ComputerBoard></ComputerBoard>
+      <ComputerBoard onExit={onExit}></ComputerBoard>
     </>
   );
 };

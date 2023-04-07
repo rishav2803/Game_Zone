@@ -4,62 +4,95 @@ import styles from "./Board.module.css";
 import Card from "../ui/Card";
 import Cell from "./Cell";
 import PlayerContext from "../../context/player-context";
+import { checkWinner } from "../../../utils/checkWinner";
+import Modal from "../ui/Modal";
 
 type BoardProps = {
   send: (a: string) => {};
   users?: [{}];
-  game:{pos:number,symbol:string};
+  game: { pos: number; symbol: string };
+  reset: {};
 };
 
-type Player="X"|"O"|"Both"|null;
+type Player = "X" | "O";
 
-const Board = ({ send, users,game }: BoardProps) => {
-  const [squares, setSquares] = useState<string[]>(Array(9).fill(null));
-  const [playerTurn, setPlayerTurn] = useState("");
-  const [winner,setWinner]=useState<Player>(null);
-  const ctx=useContext(PlayerContext);
-  const symbol=ctx.userSymbol;
+type Winner = {
+  bool?: boolean;
+  winner: string;
+};
 
-  useEffect(()=>{
-    if (game!==undefined) {
-    const newData=squares.map((val,i)=>{
-      if (i===game.pos) {
-        return game.symbol;
+const Board = ({ send, users, game, reset }: BoardProps) => {
+  const [squares, setSquares] = useState(Array(9).fill(null));
+  const [playerTurn, setPlayerTurn] = useState("X");
+  const [winner, setWinner] = useState<Winner>({ bool: false, winner: "" });
+  const ctx = useContext(PlayerContext);
+  const symbol = ctx.userSymbol;
+
+  //other player turn is here
+  useEffect(() => {
+    if (game !== undefined) {
+      //scuffed way to solve problem.Probably some better way to solve it?
+      if (game.pos === undefined) {
+        game.pos = 0;
       }
-      return val;
-    })
-    setSquares(newData);
-    setPlayerTurn(ctx.userSymbol);
+      const newData = squares.map((val, i) => {
+        if (i === game.pos) {
+          return game.symbol;
+        }
+        return val;
+      });
+      setSquares(newData);
+      setPlayerTurn(playerTurn === "X" ? "O" : "X");
     }
-  },[game])
+  }, [game]);
 
+  useEffect(() => {
+    const winner = checkWinner(squares);
+    if (winner) {
+      setWinner({
+        bool: true,
+        winner: winner,
+      });
+    } else if (winner && squares.filter((square) => !square).length) {
+      setWinner({
+        bool: true,
+        winner: "both",
+      });
+    }
+  }, [squares]);
 
-  const reset=()=>{
+  //Reset on both sides
+  if (reset) {
     setSquares(Array(9).fill(null));
-    // setPlayerTurn(true);
+    setWinner({
+      bool: false,
+      winner: "",
+    });
+    setPlayerTurn("X");
   }
 
-
   const setSquaresValue = (value: number) => {
-    console.log(playerTurn);
+    console.log("Called me");
     const newData = squares.map((val, i) => {
       if (i == value) {
-        send(JSON.stringify({
-          type:"game",
-          body:{pos:i==0?0:i,symbol:ctx.userSymbol},
-          ready:true
-        }));
+        send(
+          JSON.stringify({
+            type: "game",
+            body: { pos: i == 0 ? 0 : i, symbol: ctx.userSymbol },
+            ready: true,
+          })
+        );
         return symbol;
       }
       return val;
     });
     setSquares(newData);
-    setPlayerTurn(ctx.userSymbol=="X"?"O":"X");
   };
 
   return (
     <>
-      <Card>
+      {winner.bool && <Modal winner={winner.winner}></Modal>}
+      <div className={styles.board_container}>
         <ScoreCard users={users} currentlyPlaying={playerTurn}></ScoreCard>
         <div className={styles.container}>
           <div className={styles.grid_container}>
@@ -71,13 +104,26 @@ const Board = ({ send, users,game }: BoardProps) => {
                     key={i}
                     value={squares[i]}
                     onClick={() => setSquaresValue(i)}
-                    disabled={playerTurn==ctx.userSymbol?false:true}
+                    disabled={playerTurn == ctx.userSymbol ? false : true}
                   ></Cell>
                 );
               })}
           </div>
+          <button
+            onClick={() => {
+              send(
+                JSON.stringify({
+                  type: "reset",
+                  ready: true,
+                })
+              );
+            }}
+            className={styles.reset}
+          >
+            Reset
+          </button>
         </div>
-      </Card>
+      </div>
     </>
   );
 };

@@ -1,4 +1,4 @@
-type Player="X"|"O"|"Both"|null;
+type Player="X"|"O";
 
 export const checkWinner=(squares:Player[])=>{
   const lines=[

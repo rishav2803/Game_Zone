@@ -7,10 +7,6 @@ import (
 	"net/http"
 )
 
-type Test struct {
-	val string
-}
-
 func setupRooms() *websocket.Room {
 	room := websocket.NewRoom()
 	websocket.AddRoom(room)
@@ -18,28 +14,27 @@ func setupRooms() *websocket.Room {
 	return room
 }
 
+// NewGame Endpoint Handler
 func newGame(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("NewGame Endpoint Hit")
 	room := setupRooms()
 
 	conn, err := websocket.Upgrade(w, r)
 	if err != nil {
-		fmt.Println("Errrroror")
+		log.Println(err)
 	}
 
 	client := &websocket.Client{
 		Conn: conn,
 		Room: room,
 	}
-	fmt.Println(client)
 
 	room.Register <- client
 	client.ListenMessages()
 }
 
-func joinGame(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("JoinGame Endpoint Hit")
+// JoinGame Endpoint Handler
 
+func joinGame(w http.ResponseWriter, r *http.Request) {
 	//Check for empty rooms if found then return that room
 	room := websocket.CheckRooms()
 
@@ -65,6 +60,14 @@ func joinGame(w http.ResponseWriter, r *http.Request) {
 
 }
 
+func groupA(w http.ResponseWriter, r *http.Request) {
+	w.Write([]byte("Hello World"))
+}
+
+func groupB(w http.ResponseWriter, r *http.Request) {
+
+}
+
 func setupRoutes() {
 	//Newgame socket endpoint
 	http.HandleFunc("/newgame", func(w http.ResponseWriter, r *http.Request) {
@@ -74,6 +77,16 @@ func setupRoutes() {
 	//JoinGame socket endpoint
 	http.HandleFunc("/joingame", func(w http.ResponseWriter, r *http.Request) {
 		joinGame(w, r)
+	})
+
+	//groupA socket endpoint
+	http.HandleFunc("/tournament/groupA", func(w http.ResponseWriter, r *http.Request) {
+		groupA(w, r)
+	})
+
+	//groupB socket endpoint
+	http.HandleFunc("/tournament/groupB", func(w http.ResponseWriter, r *http.Request) {
+		groupB(w, r)
 	})
 
 }

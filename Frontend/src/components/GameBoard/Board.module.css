@@ -3,6 +3,16 @@
   --mark-size: calc(var(--cell-size) * 0.9);
 }
 
+.board_container {
+  width: min(100%, 1080px);
+  border-radius: 12px;
+  height: 90dvh;
+  margin-inline: auto;
+  border: 4px dotted hsl(217, 16%, 45%);
+  margin-top: 2rem;
+  overflow-y: hidden;
+}
+
 .container {
   width: 100%;
   display: flex;
@@ -17,18 +27,26 @@
   grid-template-columns: repeat(3, auto);
 }
 
-.reset {
-  background-color: #04114f;
+.reset,
+.leave {
+  background-color: rgb(24, 188, 156);
   margin-top: 3rem;
   font-size: 1.5rem;
   padding: 0.5rem 1.3rem;
+  color: #fff;
+  font-weight: bold;
   border: none;
-  color: white;
   z-index: 4;
 }
 
-.reset:hover {
+.reset:hover,
+.leave:hover {
   cursor: pointer;
+}
+
+.leave {
+  background-color: #ee6677;
+  margin-left: 1rem;
 }
 
 @media screen and (max-width: 400px) {
@@ -44,12 +62,15 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  color: #04114f;
-  border: 2px solid #04114f;
-  font-size: 10vmin;
+  color: #ee6677;
+  font-weight: bold;
+  border: 3px solid #969fa8;
+  font-size: 3rem;
   background-color: transparent;
 }
-
+.green {
+  color: rgb(24, 188, 156);
+}
 .grid_item:hover {
   cursor: pointer;
 }
