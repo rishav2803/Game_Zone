@@ -22,7 +22,7 @@ export default function Home() {
     >
       <Container w="full" textAlign={"center"} display="flex" flexDirection={"column"} justifyContent="center" h="30vh">
         <Flex fontSize="3rem" fontWeight="bold" mb={4} alignItems="center" justifyContent="center">
-          <Text color={colorScheme.foreground}>Multi-</Text>
+          <Text color={colorScheme.foreground}>Game-</Text>
           <Text bgColor={colorScheme.purple}>Zone</Text>
         </Flex>
         <Text color={colorScheme.foreground} fontSize="lg" fontWeight={"medium"} mt={2}>Connecting Gamers, One Move at a Time.</Text>
