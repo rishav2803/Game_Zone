@@ -1,11 +1,8 @@
 import Login from "./Login";
 import Menu from "./Menu";
 import { useState } from "react";
-import PlayerContext from "../../context/player-context";
-import Symbol from "./Symbol";
-import CreateGame from "../CreateGame";
-import JoinGame from "../JoinGame";
 import Computer from "../Computer";
+import {Box, Container} from "@chakra-ui/react";
 
 const Start = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -13,8 +10,6 @@ const Start = () => {
   const [isSelected, setIsSelected] = useState(false);
   const [isSymbolSelected, setIsSymbolSelected] = useState(false);
 
-  const [isCreateGame, setIsCreateGame] = useState(false);
-  const [isJoinGame, setIsJoinGame] = useState(false);
   const [isComputer, setIsComputer] = useState(false);
 
   const [optionSelected, isOptionSelected] = useState("");
@@ -50,30 +45,16 @@ const Start = () => {
   }
 
   return (
-    <>
-      <PlayerContext.Provider
-        value={{
-          userName: userName,
-          userSymbol: userSymbol,
-          optionSelected: optionSelected,
-        }}
-      >
-        {!isLoggedIn && <Login login={loginHandler} onUser={userNameHandler} />}
-        {!isSelected && isLoggedIn && <Menu onSelect={optionHandler} />}
-        {!isSymbolSelected && isSelected && isLoggedIn && (
-          <Symbol onSymbol={symbolHandler} />
-        )}
-        {isCreateGame && isSymbolSelected && isSelected && isLoggedIn && (
-          <CreateGame />
-        )}
-        {isJoinGame && isSymbolSelected && isSelected && isLoggedIn && (
-          <JoinGame />
-        )}
-        {isComputer && isSymbolSelected && isSelected && isLoggedIn && (
-          <Computer  onExit={exitHandler}/>
-        )}
-      </PlayerContext.Provider>
-    </>
+    <Box bg={"teal"} w={"100%"}>
+      <Container>
+        <h1>GAMING AREA</h1>
+      </Container>
+      {!isLoggedIn && <Login login={loginHandler} onUser={userNameHandler} />}
+      {!isSelected && isLoggedIn && <Menu onSelect={optionHandler} />}
+      {isComputer && isSymbolSelected && isSelected && isLoggedIn && (
+        <Computer  onExit={exitHandler}/>
+      )}
+    </Box>
   );
 };
 

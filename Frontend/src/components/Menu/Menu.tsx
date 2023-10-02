@@ -1,11 +1,25 @@
+import {useNavigate} from "react-router-dom";
 import Card from "../ui/Card";
 import styles from "./Menu.module.css";
 
 const Menu = ({onSelect}) => {
 
+  const navigate=useNavigate();
+
   function optionHandler(e){
     onSelect(true,e.target.innerText);
+  }
 
+  async function createGameHandler(){
+    const res=await fetch("http://localhost:8080/newgame");
+    const {RoomId}=await res.json();
+    navigate(`game/${RoomId}`);
+  }
+
+  async function joinGameHandler(){
+    const res=await fetch("http://localhost:8080/joingame");
+    const {RoomId}=await res.json();
+    navigate(`game/${RoomId}`);
   }
 
   return (
@@ -22,8 +36,8 @@ const Menu = ({onSelect}) => {
           </div>
           <div className={styles.menu_container}>
             <ul className={styles.menu}>
-              <li className={styles.menu_item} onClick={optionHandler}>Create Game</li>
-              <li className={styles.menu_item} onClick={optionHandler}>Join Game</li>
+              <li className={styles.menu_item} onClick={createGameHandler}>Create Game</li>
+              <li className={styles.menu_item} onClick={joinGameHandler}>Join Game</li>
               <li className={styles.menu_item} onClick={optionHandler}>Tournament</li>
               <li className={styles.menu_item} onClick={optionHandler}>Vs Computer</li>
             </ul>

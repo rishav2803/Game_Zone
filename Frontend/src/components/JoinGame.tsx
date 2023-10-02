@@ -17,11 +17,13 @@ type Game={
 
 const JoinGame = () => {
   const [ready, val, send] = useWs({url:"ws://localhost:8080/joingame"});
-const [userInfo,setUserInfo]=useState<User>();
-const [incomingMessages,setIncomingMessages]=useState<Game>();
+  const [userInfo,setUserInfo]=useState<User>();
+  const [incomingMessages,setIncomingMessages]=useState<Game>();
 
   useEffect(() => {
     if (val.type==="user") {
+      console.log(val);
+      
       setUserInfo(val);
     }else{
       setIncomingMessages(val);

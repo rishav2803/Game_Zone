@@ -1,125 +1,163 @@
 import { useContext, useEffect, useState } from "react";
-import ScoreCard from "../ScoreCard/ScoreCard";
-import styles from "./Board.module.css";
+import {Box, Button, Container, Flex, Grid, GridItem, Text} from "@chakra-ui/react";
 import Cell from "./Cell";
-import PlayerContext from "../../context/player-context";
-import Modal from "../ui/Modal";
-import { checkWinner } from "../../../utils/checkWinner";
-import {useNavigate} from "react-router-dom";
+import ResultModal from "../ui/Modal";
+import {checkWinner, getRandomSymbol} from "../../utils/checkWinner";
+import colorScheme from "../../utils/colors";
+import Timer from "../Timer";
 
 
-type Winner = {
-  bool?: boolean;
-  winner: string;
-};
-
-const ComputerBoard = ({onExit}) => {
-  const ctx = useContext(PlayerContext);
+const ComputerBoard = () => {
   const [squares, setSquares] = useState(Array(9).fill(null));
   const [playerTurn, setPlayerTurn] = useState(true);
-  const symbol = ctx.userSymbol == "X" ? "O" : "X";
-  const [winner, setWinner] = useState<Winner>({ bool: false, winner: "" });
+  const [userSymbol] = useState(getRandomSymbol());
+  const [computerSymbol] = useState(userSymbol === "X" ? "O" : "X");
+  const [winner, setWinner] = useState("");
+  const [gameStatus, setGameStatus] = useState<"playing" | "won" | "draw">("playing");
+  const [userScore,setUserScore]=useState(0);
+  const [computerScore,setComputerScore]=useState(0);
+
+  const colorMapping={
+    "X":colorScheme.purple,
+    "O":colorScheme.green
+  }
+
+
+  function incrementScore(winnerName:string):void{
+    if(winnerName==userSymbol){
+      setUserScore(score=>score+1);
+    }else{
+      setComputerScore(score=>score+1);
+    }
+  }
 
   const reset = () => {
     setSquares(Array(9).fill(null));
-    setWinner({
-      bool: false,
-      winner: "",
-    });
+    setWinner("");
+    setGameStatus("playing")
     setPlayerTurn(true);
-  };
-
-  const exit = () => {
-    console.log(onExit);
-    onExit(false);
   };
 
   const findIndex = () => {
-    const emptyCells: number[] = [];
-    //Make array of all the indices that are empty
-    squares.forEach((square, index) => {
-      if (square == null) {
-        emptyCells.push(index);
-      }
-    });
-    //randomly select the index from the array
-    const index = emptyCells[Math.floor(Math.random() * emptyCells.length)];
-    const newData = squares.map((val, i) => {
-      if (i == index) {
-        return symbol;
-      }
-      return val;
-    });
-    setPlayerTurn(true);
-    setSquares(newData);
+    if (gameStatus === "playing") {
+      console.log("Hello World inside findIndex");
+      const emptyCells: number[] = [];
+      squares.forEach((square, index) => {
+        if (square == null) {
+          emptyCells.push(index);
+        }
+      });
+      const index = emptyCells[Math.floor(Math.random() * emptyCells.length)];
+      const newData = squares.map((val, i) => {
+        if (i == index) {
+          return computerSymbol;
+        }
+        return val;
+      });
+      setPlayerTurn(true);
+      setSquares(newData);
+    }
   };
 
-  if (playerTurn == false) {
-    setTimeout(() => {
-      findIndex();
-    }, 1200);
-  }
+  useEffect(() => {
+    console.log(gameStatus);
+    const makeComputerMove = () => {
+      if (playerTurn === false && gameStatus === "playing") {
+        setTimeout(() => {
+          findIndex();
+        }, 2000);
+      }
+    };
+
+    makeComputerMove();
+  }, [playerTurn, gameStatus]);
 
   const setSquaresValue = (value: number) => {
+    if (squares[value] !== null || gameStatus !== "playing") {
+      return;
+    }
+
     const newData = squares.map((val, i) => {
-      if (i == value) {
-        return ctx.userSymbol;
+      if (i === value) {
+        return userSymbol;
       }
       return val;
     });
     setPlayerTurn(false);
     setSquares(newData);
   };
+  
 
   useEffect(() => {
-    const winner = checkWinner(squares);
-    if (winner) {
-      setWinner({
-        bool: true,
-        winner: winner,
-      });
-    } else if (winner && squares.filter((square) => !square).length) {
-      setWinner({
-        bool: true,
-        winner: "both",
-      });
+    if (gameStatus === "playing") {
+      const winner = checkWinner(squares);
+      if (winner) {
+        setGameStatus("won");
+        incrementScore(winner);
+        setWinner(winner);
+      } else if (squares.every((square) => square !== null)) {
+        setGameStatus("draw");
+      }
     }
-  }, [squares]);
+  }, [squares, gameStatus]);
 
-  return (
+  return(
     <>
-      {winner.bool && <Modal winner={winner.winner}></Modal>}
-      <div className={styles.board_container}>
-        <ScoreCard
-          currentlyPlaying={playerTurn}
-          computerSymbol={symbol}
-        ></ScoreCard>
-        <div className={styles.container}>
-          <div className={styles.grid_container}>
-            {Array(9)
-              .fill(null)
-              .map((_, i) => {
-                return (
-                  <Cell
-                    key={i}
-                    value={squares[i]}
-                    onClick={() => setSquaresValue(i)}
-                    disabled={playerTurn == true ? false : true}
-                  ></Cell>
-                );
-              })}
-          </div>
-          <div className="btn_container">
-          <button onClick={reset} className={styles.reset}>
-            Reset
-          </button>
-          <button onClick={exit} className={styles.leave}>
-            Exit  
-          </button>
-          </div>
-        </div>
-      </div>
+      {gameStatus === "won" && <ResultModal onReset={reset} winner={winner} />}
+      {gameStatus === "draw" && <ResultModal onReset={reset} winner="tie" />}
+      <Container display="flex" flexDirection={"column"} maxW="500px" w="100%" overflow="hidden" alignItems="center" h="100vh">
+        <Flex  
+          w="full" 
+          justifyContent="space-between" 
+          bgColor={colorScheme.background} 
+          boxShadow="lg"
+          borderRadius="lg"
+          mb="1.2rem"
+          mt="3rem"
+        >
+          <Flex  
+            color={colorScheme.foreground}
+            w="50%" flexDirection={"column"} 
+            borderBottom="4px" 
+            borderBottomColor={playerTurn===true?colorMapping[userSymbol]:"transparent"} 
+            justifyContent="center" alignItems={"center"}>
+            <Text fontSize="1.1rem">{userSymbol}(You)</Text>
+            <Text fontWeight={"bold"} fontSize={"1.5rem"}>{userScore}</Text>
+          </Flex>
+          <Flex 
+            color={colorScheme.foreground} 
+            borderBottom="4px" 
+            borderBottomColor={playerTurn===false?colorMapping[computerSymbol]:"transparent"} 
+            w="50%" 
+            p="1rem" 
+            flexDirection={"column"} 
+            justifyContent="center" 
+            alignItems={"center"}
+          >
+            <Text fontSize="1.1rem">{computerSymbol}(CPU)</Text>
+            <Text fontWeight={"bold"} fontSize={"1.5rem"}>{computerScore}</Text>
+          </Flex>
+        </Flex>
+        <Grid mt="5rem" templateColumns="repeat(3, 1fr)">
+          {Array(9).fill(null).map((_, index) => (
+            <GridItem key={index}
+              borderTop={index < 3 ? "none" : `2px solid ${colorScheme.foreground}`}
+              borderBottom={index > 5 ? "none" : `2px solid ${colorScheme.foreground}`}
+              borderLeft={index % 3 === 0 ? "none" : `2px solid ${colorScheme.foreground}`}
+              borderRight={(index + 1) % 3 === 0 ? "none" : `2px solid ${colorScheme.foreground}`}
+            >
+              <Cell
+                key={index}
+                value={squares[index]}
+                onClick={() => setSquaresValue(index)}
+                disabled={playerTurn == true ? false : true}
+              />
+            </GridItem>
+          ))}
+        </Grid>
+      </Container>
     </>
   );
+
 };
 export default ComputerBoard;

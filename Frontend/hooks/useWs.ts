@@ -12,19 +12,19 @@ export const useWs = (props:Url) => {
   const ws = useRef(null);
   const ctx=useContext(PlayerContext);
 
-
   useEffect(() => {
-  const socket = new WebSocket(props.url);
+    const socket = new WebSocket(props.url);
+
     socket.onopen = () => {
-      const { userName,userSymbol }=ctx;
       socket.send(
         JSON.stringify({
           type:'user',
-          users:[{ name:userName,symbol:userSymbol }]
+          users:[{ name:ctx?.currentUser,symbol:ctx?.userSymbol}]
         })
-      )
+      );
       setIsReady(true);
     };
+
     socket.onclose = () => setIsReady(false);
 
     socket.onmessage = (event) => {

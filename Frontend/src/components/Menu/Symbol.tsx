@@ -1,14 +1,6 @@
 import Card from "../ui/Card";
 import styles from "./Symbol.module.css";
-import { useNavigate } from "react-router-dom";
-import PlayerContext from "../../context/player-context";
-import {useContext} from "react";
-import {useWs} from "../../../hooks/useWs";
-
 const Symbol = ({onSymbol}) => {
-  const navigate=useNavigate();
-  const ctx=useContext(PlayerContext);
-
   function symbolHandler(e){
     onSymbol(e.target.innerText);
   }

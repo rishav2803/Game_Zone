@@ -2,7 +2,6 @@ package websocket
 
 import (
 	"net/http"
-
 	"github.com/gorilla/websocket"
 )
 

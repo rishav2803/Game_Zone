@@ -1,130 +1,68 @@
 import { useContext, useEffect, useState } from "react";
-import ScoreCard from "../ScoreCard/ScoreCard";
-import styles from "./Board.module.css";
-import Card from "../ui/Card";
 import Cell from "./Cell";
 import PlayerContext from "../../context/player-context";
-import { checkWinner } from "../../../utils/checkWinner";
 import Modal from "../ui/Modal";
+import {checkWinner} from "../../utils/checkWinner";
+import {Text,Container, Grid, GridItem} from "@chakra-ui/react";
+import colorScheme from "../../utils/colors";
+import TicScoreCard from "../ScoreCard/TicScoreCard";
+import {Player} from "../Screens/Game";
 
 type BoardProps = {
   send: (a: string) => {};
-  users?: [{}];
-  game: { pos: number; symbol: string };
-  reset: {};
+  users: Player[],
+  playerTurn:string
+  // game: { pos: number; symbol: string };
+  // reset: {};
 };
 
-type Player = "X" | "O";
+type PlayerMove = "X" | "O";
 
 type Winner = {
   bool?: boolean;
   winner: string;
 };
 
-const Board = ({ send, users, game, reset }: BoardProps) => {
-  const [squares, setSquares] = useState(Array(9).fill(null));
-  const [playerTurn, setPlayerTurn] = useState("X");
-  const [winner, setWinner] = useState<Winner>({ bool: false, winner: "" });
-  const ctx = useContext(PlayerContext);
-  const symbol = ctx.userSymbol;
+const Board = ({ send, users,playerTurn }: BoardProps) => {
+  const ctx=useContext(PlayerContext);
 
-  //other player turn is here
-  useEffect(() => {
-    if (game !== undefined) {
-      //scuffed way to solve problem.Probably some better way to solve it?
-      if (game.pos === undefined) {
-        game.pos = 0;
-      }
-      const newData = squares.map((val, i) => {
-        if (i === game.pos) {
-          return game.symbol;
-        }
-        return val;
-      });
-      setSquares(newData);
-      setPlayerTurn(playerTurn === "X" ? "O" : "X");
-    }
-  }, [game]);
 
-  useEffect(() => {
-    const winner = checkWinner(squares);
-    if (winner) {
-      setWinner({
-        bool: true,
-        winner: winner,
-      });
-    } else if (winner && squares.filter((square) => !square).length) {
-      setWinner({
-        bool: true,
-        winner: "both",
-      });
-    }
-  }, [squares]);
-
-  //Reset on both sides
-  if (reset) {
-    setSquares(Array(9).fill(null));
-    setWinner({
-      bool: false,
-      winner: "",
-    });
-    setPlayerTurn("X");
+  function clickHandler(pos:number){
+    send(
+      JSON.stringify({
+        type: "game",
+        body: { pos: pos == 0 ? 0 : pos, symbol: ctx?.userSymbol },
+        ready: true,
+      })
+    );
   }
 
-  const setSquaresValue = (value: number) => {
-    console.log("Called me");
-    const newData = squares.map((val, i) => {
-      if (i == value) {
-        send(
-          JSON.stringify({
-            type: "game",
-            body: { pos: i == 0 ? 0 : i, symbol: ctx.userSymbol },
-            ready: true,
-          })
-        );
-        return symbol;
-      }
-      return val;
-    });
-    setSquares(newData);
-  };
-
+  console.log(ctx?.userSymbol===playerTurn);
+  
   return (
-    <>
-      {winner.bool && <Modal winner={winner.winner}></Modal>}
-      <div className={styles.board_container}>
-        <ScoreCard users={users} currentlyPlaying={playerTurn}></ScoreCard>
-        <div className={styles.container}>
-          <div className={styles.grid_container}>
-            {Array(9)
-              .fill(null)
-              .map((_, i) => {
-                return (
-                  <Cell
-                    key={i}
-                    value={squares[i]}
-                    onClick={() => setSquaresValue(i)}
-                    disabled={playerTurn == ctx.userSymbol ? false : true}
-                  ></Cell>
-                );
-              })}
-          </div>
-          <button
-            onClick={() => {
-              send(
-                JSON.stringify({
-                  type: "reset",
-                  ready: true,
-                })
-              );
-            }}
-            className={styles.reset}
+    <Container display="flex" flexDirection={"column"} maxW="500px" w="100%" overflow="hidden" alignItems="center" h="100vh">
+      <TicScoreCard
+        players={users==undefined?[]:users}
+        playerTurn={playerTurn}
+      />
+      <Grid mt="5rem" templateColumns="repeat(3, 1fr)">
+        {Array(9).fill(null).map((_, index) => (
+          <GridItem key={index}
+            borderTop={index < 3 ? "none" : `2px solid ${colorScheme.foreground}`}
+            borderBottom={index > 5 ? "none" : `2px solid ${colorScheme.foreground}`}
+            borderLeft={index % 3 === 0 ? "none" : `2px solid ${colorScheme.foreground}`}
+            borderRight={(index + 1) % 3 === 0 ? "none" : `2px solid ${colorScheme.foreground}`}
           >
-            Reset
-          </button>
-        </div>
-      </div>
-    </>
+            <Cell
+              key={index}
+              value={""}
+              onClick={()=>{clickHandler(index)}}
+              disabled={playerTurn===ctx?.userSymbol===true?false:true}
+            />
+          </GridItem>
+        ))}
+      </Grid>
+   </Container>
   );
 };
 export default Board;
