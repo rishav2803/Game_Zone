@@ -24,23 +24,29 @@ This repository contains the source code for my website, which hosts popular gam
 Clone the project
 
 ```bash
-  git clone https://github.com/kartikayasija/chat-app
+    https://github.com/rishav2803/Game_Zone.git
 ```
 Install dependencies
 
+For the Client
 ```bash
+  cd frontend
   npm install
 ```
 
+For the Server
 ```bash
-  npm install
+  cd backend
+  go get
 ```
 
 Start the server
 
 ```bash
-  npm run start
+  cd backend
+  go run main.go
 ```
+
 Start the Client
 
 ```bash
