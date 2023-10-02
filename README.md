@@ -5,7 +5,7 @@ This repository contains the source code for my website, which hosts popular gam
 ![Screenshot (809)](https://github.com/rishav2803/Game_Zone/assets/95288017/c017933a-4430-44e0-9896-4cf17909c3ac)
 
 **Tic Tac Toe:**
-![Screenshot (812)](https://github.com/rishav2803/Game_Zone/assets/95288017/99afa4ad-c421-4b13-8842-fa1c55169c95)
+![Screenshot (812)](https://github.com/rishav2803/Game_Zone/assets/95288017/cc19cfe3-c7d1-4c4b-9956-5a7dc63589d3)
 
 **Rock Paper Scissors:**
 ![Screenshot (811)](https://github.com/rishav2803/Game_Zone/assets/95288017/8d444b95-277b-41db-8681-56092abdd7df)
