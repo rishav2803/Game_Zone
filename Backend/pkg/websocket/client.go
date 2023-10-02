@@ -9,10 +9,9 @@ import (
 
 // User struct keep track of user
 type User struct {
-	ID         *websocket.Conn `json:"-"`
-	Name       string          `json:"name"`
-	Symbol     string          `json:"symbol"`
-	PlayerTurn string          `json:"player_turn"`
+	ID     *websocket.Conn `json:"-"`
+	Name   string          `json:"name"`
+	Symbol string          `json:"symbol"`
 }
 
 type Client struct {
@@ -20,18 +19,25 @@ type Client struct {
 	Room *Room
 }
 
+// This will contain game state send by a particular client like pos and current player turn and symbol
 type Body struct {
-	Pos        int    `json:"pos,omitempty"`
-	PlayerTurn string `json:"player_turn"`
-	Symbol     string `json:"symbol,omitempty"`
+	Pos    int    `json:"pos,omitempty"`
+	Symbol string `json:"symbol,omitempty"`
 }
 
-// The structre of the message
+// All types of message will come through this
 type Message struct {
 	Type  string `json:"type,omitempty"`
 	Body  Body   `json:"body,omitempty"`
 	Users []User `json:"users,omitempty"`
-	Ready bool   `json:"ready"`
+}
+
+// Now if the message type is user then send it through user response struct
+type UserResponse struct {
+	Type       string `json:"type"`
+	Users      []User `json:"users"`
+	PlayerTurn string `json:"player_turn"`
+	Ready      bool   `json:"ready"`
 }
 
 //This function is going to listen to incoming messages and pass to room which will broadcast to
@@ -41,6 +47,7 @@ type Message struct {
 func (c *Client) ListenMessages() {
 	//This function is going to wait until the below is returned and then will close the connection
 	var message Message
+	var userResponse UserResponse
 	defer func() {
 		c.Room.Unregister <- c
 		c.Conn.Close()
@@ -70,22 +77,22 @@ func (c *Client) ListenMessages() {
 				Symbol: message.Users[0].Symbol,
 			}
 			c.Room.Users = append(c.Room.Users, u)
-			body := Body{PlayerTurn: "X"}
 			if len(c.Room.Clients) == 1 {
-				message = Message{Type: message.Type, Body: body, Users: c.Room.Users, Ready: false}
-				// c.Room.HandleGame<-message
+				userResponse = UserResponse{Type: "user", PlayerTurn: "X", Users: c.Room.Users, Ready: false}
 			} else {
-				message = Message{Type: message.Type, Body: body, Users: c.Room.Users, Ready: true}
+				userResponse = UserResponse{Type: "user", PlayerTurn: "X", Users: c.Room.Users, Ready: true}
 			}
-
+			c.Room.Broadcast <- userResponse
 		case "game":
-			message = Message{Type: message.Type, Body: message.Body, Ready: true}
+			fmt.Println("Helod kkkk ksjdksjs")
+			body := Body{Pos: message.Body.Pos, Symbol: message.Body.Symbol}
+			c.Room.HandleGame <- body
 		case "reset":
 			fmt.Println("This case will deal with reset message type")
-			message = Message{Type: message.Type, Ready: true}
+			// message = Message{Type: message.Type, Ready: true}
+			// c.Room.Broadcast <- message
+		default:
+			fmt.Println("Some error occured")
 		}
-		//Send message to broadcast channel which will broadcast to other client
-		c.Room.Broadcast <- message
-		fmt.Printf("Message Received: %+v\n", message)
 	}
 }

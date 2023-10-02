@@ -7,7 +7,6 @@ const Cell=({value,onClick,disabled}:{
   onClick:()=>void,
   disabled:boolean
 })=>{
-  console.log(disabled);
   return (
     <Button 
       // className={`${styles.grid_item} ${value === "X" ? styles.green : styles.grid_item}`}

@@ -17,10 +17,11 @@ export type PlayersPayload = {
   ready: boolean;
 };
 
-type Game = {
+type GameStateType = {
   type: string;
-  body: { pos: number; symbol: string,playerTurn:string };
-  ready: boolean;
+  board:string[];
+  player_turn:string;
+
 };
 
 const GameRoom = () => {
@@ -30,17 +31,23 @@ const GameRoom = () => {
   const [usersPayload,setUsersPayload] = useState<PlayersPayload>();
 
   const [isReset,setIsReset]=useState(false);
-  const [incomingMessages, setIncomingMessages] = useState<Game>();
+
+  const [gameState,setGameState]=useState<GameStateType>();
+
+  console.log(val);
+  
 
 
   useEffect(() => {
     //this means this is my users payload
     if (val.type === "user") {
       setUsersPayload(val);
-    } else if (val.type==="reset") {
+    } 
+    if (val.type==="reset") {
       setIsReset(true);
-    }else{
-      setIncomingMessages(val);
+    }
+    if(val.type="game_state"){
+      setGameState(val);
     } 
   }, [val]);
 
@@ -53,8 +60,9 @@ const GameRoom = () => {
         />
         <Board
           users={usersPayload?.users===undefined?[]:usersPayload.users}
+          board={gameState?.board===undefined?Array(9).fill(null):gameState.board}
           send={send}
-          playerTurn={val.body?.player_turn}
+          playerTurn={val.player_turn}
         />
       </div>
     </>

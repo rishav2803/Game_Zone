@@ -36,32 +36,43 @@ func NewRoom() *Room {
 	return room
 }
 
-//func (room *Room) handleMoves(moves Body) Message {
-//	//check the winner before applying the moves
-//	// return checkWinner()
-//	var message Message
+type GameState struct {
+	Type       string    `json:"type,omitempty"`
+	Board      [9]string `json:"board"`
+	PlayerTurn string    `json:"player_turn"`
+}
 
-//	//Here apply the move
-//	for i := 0; i < len(room.Board); i++ {
-//		if room.Board[moves.Pos] != "" {
-//			room.Board[moves.Pos] = moves.Symbol
-//			message = Message{Type: message.Type, Body: message.Body, Ready: true}
-//			return message
-//		}
-//	}
+func (room *Room) handleMoves(moves Body) GameState {
+	var gameState GameState
+	// Apply the move
+	gameState.Type = "game_state"
+	room.Board[moves.Pos] = moves.Symbol
 
-//	// return something
-//}
+	gameState.Board = room.Board
+	// Check if there is a winner
+	// Implement checkWinner() logic here and set appropriate values in 'message'
+
+	// Change player turn
+	if moves.Symbol == "X" {
+		gameState.PlayerTurn = "O"
+	} else {
+		gameState.PlayerTurn = "X"
+	}
+
+	return gameState
+}
 
 func (room *Room) Start() {
 	for {
 		select {
 		//New client registers
+
 		case client := <-room.Register:
 			fmt.Print("Inside here")
 			room.Clients[client] = true
 			fmt.Println("Size of Connection Pool: ", len(room.Clients))
 			break
+
 		case client := <-room.Unregister:
 			var updatedUsers []User
 			for _, user := range room.Users {
@@ -71,19 +82,22 @@ func (room *Room) Start() {
 			}
 			delete(room.Clients, client)
 			room.Users = updatedUsers
-			message := Message{Type: "user", Users: room.Users, Ready: false}
+			userRes := UserResponse{Type: "user", Users: room.Users, Ready: false}
 			for client, _ := range room.Clients {
-				if err := client.Conn.WriteJSON(message); err != nil {
+				if err := client.Conn.WriteJSON(userRes); err != nil {
 					fmt.Println(err)
 					return
 				}
 			}
-			break
 		case move := <-room.HandleGame:
-			fmt.Println(move.Pos)
-			//Return some kind of message form the handle moves
-			// mssg := room.handleMoves(move)
-			// room.Broadcast<-mssg
+			mssg := room.handleMoves(move)
+			fmt.Print(mssg)
+			for client, _ := range room.Clients {
+				if err := client.Conn.WriteJSON(mssg); err != nil {
+					fmt.Println(err)
+					return
+				}
+			}
 		case message := <-room.Broadcast:
 			fmt.Println("Sending message to all clients in Pool")
 			for client, _ := range room.Clients {
