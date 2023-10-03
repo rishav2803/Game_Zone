@@ -1,19 +1,49 @@
-import { Flex, Text, Container } from "@chakra-ui/react";
+import { Flex, Text, Container, useEditable } from "@chakra-ui/react";
 import PlayerContext from "../../context/player-context";
 import colorScheme from "../../utils/colors";
-import { useContext } from "react";
+import {useState,useContext,useEffect} from "react";
 import { Player } from "../Screens/Game";
 
 interface TicScoreCardProps {
   players: Player[];
   playerTurn:string;
+  winner:string;
 }
 
-export default function TicScoreCard({ players, playerTurn }: TicScoreCardProps) {
+export default function TicScoreCard({ players, playerTurn,winner }: TicScoreCardProps) {
+  const [playerScore,setPlayerScore]=useState(0);
+  const [otherPlayerScore,setOtherPlayerScore]=useState(0);
+  console.log(winner);
+  
+  
+  const ctx=useContext(PlayerContext);
+
+  useEffect(()=>{
+    console.log(winner);
+    
+    if (winner) {
+      console.log("hello");
+      
+      if (winner==="tie") {
+        setPlayerScore(sc=>sc+1);
+        setOtherPlayerScore(sc=>sc+1);
+      }
+      if (ctx?.userSymbol===winner) {
+        console.log(winner);
+        setPlayerScore(sc=>sc+1);
+      }else{
+        setOtherPlayerScore(sc=>sc+1);
+      }
+    }
+
+  },[winner]);
+
+
   const colorMapping = {
     "X": colorScheme.purple,
     "O": colorScheme.green
   };
+
 
   
   return (
@@ -38,7 +68,7 @@ export default function TicScoreCard({ players, playerTurn }: TicScoreCardProps)
             borderBottomColor={player.symbol==playerTurn?colorMapping[player.symbol]:"transparent"}
           >
             <Text fontSize="1.1rem">{player.symbol}{`(${player.name})`}</Text>
-            <Text fontWeight={"bold"} fontSize={"1.5rem"}>{0}</Text>
+            <Text fontWeight={"bold"} fontSize={"1.5rem"}>{player.symbol===ctx?.userSymbol?playerScore:otherPlayerScore}</Text>
           </Flex>
         ))}
       </Flex>

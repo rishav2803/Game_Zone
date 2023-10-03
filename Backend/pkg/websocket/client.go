@@ -88,9 +88,7 @@ func (c *Client) ListenMessages() {
 			body := Body{Pos: message.Body.Pos, Symbol: message.Body.Symbol}
 			c.Room.HandleGame <- body
 		case "reset":
-			fmt.Println("This case will deal with reset message type")
-			// message = Message{Type: message.Type, Ready: true}
-			// c.Room.Broadcast <- message
+
 		default:
 			fmt.Println("Some error occured")
 		}

@@ -18,10 +18,9 @@ export type PlayersPayload = {
 };
 
 type GameStateType = {
-  type: string;
   board:string[];
   player_turn:string;
-
+  winner:string
 };
 
 const GameRoom = () => {
@@ -61,7 +60,9 @@ const GameRoom = () => {
         <Board
           users={usersPayload?.users===undefined?[]:usersPayload.users}
           board={gameState?.board===undefined?Array(9).fill(null):gameState.board}
+          winner={gameState?.winner===undefined?"":gameState.winner}
           send={send}
+          err={val.err}
           playerTurn={val.player_turn}
         />
       </div>
