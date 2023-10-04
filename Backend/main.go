@@ -24,8 +24,13 @@ func setupRooms() *websocket.Room {
 }
 
 func getSymbol(r *websocket.Room) string {
-	if len(r.Symbols) == 1 {
-		return r.Symbols[0]
+
+	//get the last symbol present in a room and remove it
+	if len(r.Symbols) > 0 {
+		lastIndex := len(r.Symbols) - 1
+		lastSymbol := r.Symbols[lastIndex]
+		r.Symbols = r.Symbols[:lastIndex]
+		return lastSymbol
 	}
 
 	rand.Seed(time.Now().UnixNano())
@@ -73,28 +78,9 @@ func newGame(w http.ResponseWriter, r *http.Request) {
 	}
 	w.Header().Set("Content-Type", "application/json")
 	w.Write(data)
-}
 
-// JoinGame Endpoint Handler
-
-func joinGame(w http.ResponseWriter, r *http.Request) {
-	//Check for empty rooms if found then return that room
-	room := websocket.CheckRooms()
-	if room == nil {
-		fmt.Print("No new Room Found")
-		return
-	}
-	responseData := &ResponseData{
-		RoomId: room.RoomId,
-	}
-	EnableCORS(w)
-	data, err := json.Marshal(responseData)
-	if err != nil {
-		http.Error(w, "Failed to marshal JSON response", http.StatusInternalServerError)
-		return
-	}
-	w.Header().Set("Content-Type", "application/json")
-	w.Write(data)
+	// Clean up empty rooms after a new game is created
+	websocket.CleanupEmptyRooms()
 }
 
 // Now here we will do the upgrade shit
@@ -125,18 +111,9 @@ func playGame(w http.ResponseWriter, r *http.Request) {
 func setupRoutes() {
 	//Newgame socket endpoint
 	//Handle func by default can match any type of request be it get,post,put,delete etc
-	http.HandleFunc("/newgame", func(w http.ResponseWriter, r *http.Request) {
-		newGame(w, r)
-	})
+	http.HandleFunc("/newgame", newGame)
 
-	//JoinGame socket endpoint
-	http.HandleFunc("/joingame", func(w http.ResponseWriter, r *http.Request) {
-		joinGame(w, r)
-	})
-
-	http.HandleFunc("/game/", func(w http.ResponseWriter, r *http.Request) {
-		playGame(w, r)
-	})
+	http.HandleFunc("/game/", playGame)
 
 }
 

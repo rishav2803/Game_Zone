@@ -20,7 +20,8 @@ export type PlayersPayload = {
 type GameStateType = {
   board:string[];
   player_turn:string;
-  winner:string
+  winner:string;
+  reset_status:boolean;
 };
 
 const GameRoom = () => {
@@ -42,9 +43,6 @@ const GameRoom = () => {
     if (val.type === "user") {
       setUsersPayload(val);
     } 
-    if (val.type==="reset") {
-      setIsReset(true);
-    }
     if(val.type="game_state"){
       setGameState(val);
     } 
@@ -55,7 +53,11 @@ const GameRoom = () => {
       <div>
         <RenderIf
           renderIf={usersPayload?.ready===false}
-          children={<JoiningModal/>}
+          children={<JoiningModal mssg="Finding a player..."/>}
+        />
+        <RenderIf
+          renderIf={usersPayload?.ready===true && gameState?.reset_status===true}
+          children={<JoiningModal mssg="Resetting game..."/>}
         />
         <Board
           users={usersPayload?.users===undefined?[]:usersPayload.users}

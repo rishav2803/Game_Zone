@@ -84,11 +84,10 @@ func (c *Client) ListenMessages() {
 			}
 			c.Room.Broadcast <- userResponse
 		case "game":
-			fmt.Println("Helod kkkk ksjdksjs")
 			body := Body{Pos: message.Body.Pos, Symbol: message.Body.Symbol}
 			c.Room.HandleGame <- body
 		case "reset":
-
+			c.Room.HandleResetRequestsChan <- c
 		default:
 			fmt.Println("Some error occured")
 		}

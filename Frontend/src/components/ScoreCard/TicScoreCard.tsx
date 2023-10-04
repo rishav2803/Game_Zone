@@ -15,15 +15,18 @@ export default function TicScoreCard({ players, playerTurn,winner }: TicScoreCar
   const [otherPlayerScore,setOtherPlayerScore]=useState(0);
   console.log(winner);
   
-  
   const ctx=useContext(PlayerContext);
 
   useEffect(()=>{
-    console.log(winner);
-    
+    if (players.length===1) {
+      setPlayerScore(0);
+      setOtherPlayerScore(0);
+    }
+  },[players]);
+
+
+  useEffect(()=>{
     if (winner) {
-      console.log("hello");
-      
       if (winner==="tie") {
         setPlayerScore(sc=>sc+1);
         setOtherPlayerScore(sc=>sc+1);
@@ -34,6 +37,7 @@ export default function TicScoreCard({ players, playerTurn,winner }: TicScoreCar
       }else{
         setOtherPlayerScore(sc=>sc+1);
       }
+
     }
 
   },[winner]);
