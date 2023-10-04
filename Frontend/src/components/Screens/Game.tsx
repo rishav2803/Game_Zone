@@ -17,10 +17,11 @@ export type PlayersPayload = {
   ready: boolean;
 };
 
-type Game = {
-  type: string;
-  body: { pos: number; symbol: string,playerTurn:string };
-  ready: boolean;
+type GameStateType = {
+  board:string[];
+  player_turn:string;
+  winner:string;
+  reset_status:boolean;
 };
 
 const GameRoom = () => {
@@ -30,17 +31,20 @@ const GameRoom = () => {
   const [usersPayload,setUsersPayload] = useState<PlayersPayload>();
 
   const [isReset,setIsReset]=useState(false);
-  const [incomingMessages, setIncomingMessages] = useState<Game>();
+
+  const [gameState,setGameState]=useState<GameStateType>();
+
+  console.log(val);
+  
 
 
   useEffect(() => {
     //this means this is my users payload
     if (val.type === "user") {
       setUsersPayload(val);
-    } else if (val.type==="reset") {
-      setIsReset(true);
-    }else{
-      setIncomingMessages(val);
+    } 
+    if(val.type="game_state"){
+      setGameState(val);
     } 
   }, [val]);
 
@@ -49,12 +53,19 @@ const GameRoom = () => {
       <div>
         <RenderIf
           renderIf={usersPayload?.ready===false}
-          children={<JoiningModal/>}
+          children={<JoiningModal mssg="Finding a player..."/>}
+        />
+        <RenderIf
+          renderIf={usersPayload?.ready===true && gameState?.reset_status===true}
+          children={<JoiningModal mssg="Resetting game..."/>}
         />
         <Board
           users={usersPayload?.users===undefined?[]:usersPayload.users}
+          board={gameState?.board===undefined?Array(9).fill(null):gameState.board}
+          winner={gameState?.winner===undefined?"":gameState.winner}
           send={send}
-          playerTurn={val.body?.player_turn}
+          err={val.err}
+          playerTurn={val.player_turn}
         />
       </div>
     </>
