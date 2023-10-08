@@ -6,6 +6,7 @@ import colorScheme from "../../utils/colors";
 import TicScoreCard from "../ScoreCard/TicScoreCard";
 import {Player} from "../Screens/Game";
 import ResultModal from "../ui/Modal";
+import TicResultModal from "../ui/TicResultModal";
 
 type BoardProps = {
   send: (a: string) => {};
@@ -49,7 +50,7 @@ const Board = ({ send, users,board,playerTurn,err,winner }: BoardProps) => {
 
   return (
     <>
-      { winner!="" && <ResultModal onReset={resetHandler} winner={winner} />}
+      { winner!="" && <TicResultModal onReset={resetHandler} winner={winner} />}
       <Container display="flex" flexDirection={"column"} maxW="500px" w="100%" overflow="hidden" alignItems="center" h="100vh">
         <TicScoreCard
           players={users==undefined?[]:users}

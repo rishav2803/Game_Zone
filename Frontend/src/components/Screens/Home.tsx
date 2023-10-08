@@ -4,6 +4,7 @@ import {useContext} from "react";
 import colorScheme from "../../utils/colors";
 import {games} from "../../utils/gamesList";
 import PlayerContext from "../../context/player-context";
+import GameCard from "../GameCard";
 
 export default function Home() {
   const navigate=useNavigate();
@@ -30,34 +31,23 @@ export default function Home() {
       <Container maxW="1240px" w="full" color={colorScheme.foreground}>
         <Tabs mt={4} colorScheme={"purple"}>
           <TabList>
-            <Tab>All</Tab>
             <Tab>Computer</Tab>
             <Tab>Multiplayer</Tab>
           </TabList>
           <TabPanels>
             <TabPanel>
-              <Grid templateColumns="repeat(4, 1fr)" placeItems={"center"} rowGap={"2rem"}>
-                <Stack spacing={4}  direction={{ base: "column", md: "row" }} width="full">
-                  {games.map((game,index) => (
-                    <GridItem borderRadius={"lg"} boxShadow={"xl"} key={index}  >
-                      <Card  w={"280px"} bgColor={colorScheme.brightBlack} h={"40vh"} position="relative">
-                        <Box w="100%" h="90%" marginX="auto" >
-                          <img src={game.imgLink} alt="Tic Tac Toe" style={{ height: "100%", objectFit: "cover", borderRadius: "lg" }} />
-                        </Box>
-                        <Box position="absolute" bottom="0" w="100%" p="4" bg="rgba(0,0,0,0.5)">
-                          <Text onClick={createGameHandler} color={colorScheme.foreground} textAlign="center" fontSize="lg" fontWeight="bold">
-                            {game.name}
-                            {/* <Link to={game.link}>{game.name}</Link> */}
-                          </Text>
-                        </Box>
-                      </Card>
-                    </GridItem>
+              <Grid templateColumns={{ base: "1fr", md: "repeat(3, 1fr)" }} marginInline="auto" gap={"2rem"}>
+                {games.filter(game => game.computer === true).map((game,index) => (
+                  <GameCard name={game.name} imgLink={game.imgLink} onClick={()=>navigate(game.link)}/>
                   ))}
-                </Stack>
               </Grid>
             </TabPanel>
             <TabPanel>
-              {/* Content for Multiplayer Tab */}
+              <Grid templateColumns={{ base: "1fr", md: "repeat(3, 1fr)" }} marginInline="auto" gap={"2rem"}>
+                {games.filter(game => game.online === true).map((game,index) => (
+                  <GameCard name={game.name} imgLink={game.imgLink} onClick={createGameHandler}/>
+                ))}
+              </Grid>
             </TabPanel>
           </TabPanels>
         </Tabs>

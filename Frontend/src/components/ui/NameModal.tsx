@@ -15,7 +15,7 @@ const NameModal = () => {
   }
 
   return (
-    <Box display="grid" placeItems="center" position="fixed" w="100%" h="100%" bgColor="rgba(0,0,0,0.5)" zIndex="2">
+    <Box  display="grid" placeItems="center" position="fixed" w="100%" h="100%" bgColor="rgba(0,0,0,0.5)" zIndex="10">
       <Box display="flex" flexDirection="column" justifyContent="center"  w="full"  h="30vh" bgColor={colorScheme.background} zIndex="3" color={colorScheme.foreground}>
         <Container>
           <FormLabel>Enter a name:</FormLabel>

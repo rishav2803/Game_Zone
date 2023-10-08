@@ -1,10 +1,11 @@
 import { Box , Container, Flex, Text } from "@chakra-ui/react";
-import { useEffect,useState } from "react";
+import { useContext, useEffect,useState } from "react";
 import colorScheme from "../utils/colors";
 import RPSButton from "./RPSButton";
 import {rps} from "../utils/rps";
 import {checkWinnerRps} from "../utils/checkWinner";
 import ResultModal from "./ui/Modal";
+import PlayerContext from "../context/player-context";
 
 
 export interface rpsState{
@@ -21,6 +22,8 @@ export default function RPS(){
   const [winner, setWinner] = useState("");
   const [playerWins, setPlayerWins] = useState(0);
   const [cpuWins, setCpuWins] = useState(0);
+
+  const ctx=useContext(PlayerContext);
   function reset(){
     setSelected(false);
     setUserChoice({} as rpsState);
@@ -41,10 +44,10 @@ export default function RPS(){
 
  useEffect(() => {
     if (selected) {
-      const result = checkWinnerRps(userChoice, computerChoice);
+      const result = checkWinnerRps(userChoice,ctx.currentUser,computerChoice);
       setWinner(result);
 
-      if (result === "USER") {
+      if (result === ctx?.currentUser) {
         setPlayerWins(playerWins + 1);
       } else if (result === "CPU") {
         setCpuWins(cpuWins + 1);
@@ -67,7 +70,7 @@ export default function RPS(){
         >
           <Flex fontFamily="Fredoka" color={colorScheme.foreground}
             w="50%" flexDirection={"column"} justifyContent="center" alignItems={"center"}>
-            <Text fontSize="1.1rem">Player</Text>
+            <Text fontSize="1.1rem">{ctx?.currentUser}</Text>
             <Text fontWeight={"bold"} fontSize={"1.5rem"}>{playerWins}</Text>
           </Flex>
           <Flex color={colorScheme.foreground} borderBottom="4px" borderBottomColor={colorScheme.green} w="50%" p="1rem" flexDirection={"column"} justifyContent="center" alignItems={"center"}>
@@ -109,7 +112,7 @@ export default function RPS(){
           >
             <Flex fontFamily="Fredoka" color={colorScheme.foreground}
               w="50%" flexDirection={"column"} justifyContent="center" alignItems={"center"}>
-              <Text fontSize="1.1rem">Player</Text>
+              <Text fontSize="1.1rem">{ctx?.currentUser}</Text>
               <Text fontWeight={"bold"} fontSize={"1.5rem"}>{playerWins}</Text>
             </Flex>
             <Flex color={colorScheme.foreground} borderBottom="4px" borderBottomColor={colorScheme.green} w="50%" p="1rem" flexDirection={"column"} justifyContent="center" alignItems={"center"}>
