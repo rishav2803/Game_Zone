@@ -11,9 +11,11 @@ type ModalMessage = {
   onReset:() => void;
 };
 
-const ResultModal = ({ winner,onReset }: ModalMessage) => {
+const TicResultModal = ({ winner,onReset }: ModalMessage) => {
   const navigate=useNavigate();
   const ctx=useContext(PlayerContext);
+  console.log(winner);
+  
 
   function exit() {
     navigate("/");
@@ -32,20 +34,13 @@ const ResultModal = ({ winner,onReset }: ModalMessage) => {
            } 
           />
           <RenderIf
-            renderIf={winner==ctx.currentUser}
+            renderIf={winner!=="tie"}
             children={
-                <>
-                  <Text color={colorScheme.foreground} fontSize={["1.5rem","1.9rem"]} textTransform={"uppercase"}>you win!!</Text>     
-                </>
-           } 
-          />
-          <RenderIf
-            renderIf={winner!==ctx.currentUser && winner!=="tie"}
-            children={
-                <>
-                  <Text color={colorScheme.foreground} fontSize={["1.5rem","1.9rem"]} textTransform={"uppercase"}>you lost!!</Text>     
-                </>
-           } 
+              <>
+                <Text color={colorScheme.foreground} fontSize={["2.2rem","3.1rem"]}  mr={"1.2rem"}>{winner}</Text>
+                <Text color={colorScheme.foreground} fontSize={["1.5rem","1.9rem"]} textTransform={"uppercase"}>takes the round </Text>     
+              </>
+            } 
           />
         </Flex>
         <Flex mt=".5rem" borderRadius="lg">
@@ -83,4 +78,4 @@ const ResultModal = ({ winner,onReset }: ModalMessage) => {
   );
 }
 
-export default ResultModal;
+export default TicResultModal;

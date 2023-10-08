@@ -1,10 +1,11 @@
 import { useContext, useEffect, useState } from "react";
 import {Box, Button, Container, Flex, Grid, GridItem, Text} from "@chakra-ui/react";
 import Cell from "./Cell";
-import ResultModal from "../ui/Modal";
 import {checkWinner, getRandomSymbol} from "../../utils/checkWinner";
 import colorScheme from "../../utils/colors";
 import Timer from "../Timer";
+import TicResultModal from "../ui/TicResultModal";
+import PlayerContext from "../../context/player-context";
 
 
 const ComputerBoard = () => {
@@ -16,6 +17,7 @@ const ComputerBoard = () => {
   const [gameStatus, setGameStatus] = useState<"playing" | "won" | "draw">("playing");
   const [userScore,setUserScore]=useState(0);
   const [computerScore,setComputerScore]=useState(0);
+  const ctx=useContext(PlayerContext);
 
   const colorMapping={
     "X":colorScheme.purple,
@@ -40,7 +42,6 @@ const ComputerBoard = () => {
 
   const findIndex = () => {
     if (gameStatus === "playing") {
-      console.log("Hello World inside findIndex");
       const emptyCells: number[] = [];
       squares.forEach((square, index) => {
         if (square == null) {
@@ -60,15 +61,16 @@ const ComputerBoard = () => {
   };
 
   useEffect(() => {
-    console.log(gameStatus);
     const makeComputerMove = () => {
       if (playerTurn === false && gameStatus === "playing") {
+        console.log("Making computer move...");
         setTimeout(() => {
           findIndex();
         }, 2000);
+      } else {
+        console.log(`Not making computer move. playerTurn: ${playerTurn}, gameStatus: ${gameStatus}`);
       }
     };
-
     makeComputerMove();
   }, [playerTurn, gameStatus]);
 
@@ -103,8 +105,8 @@ const ComputerBoard = () => {
 
   return(
     <>
-      {gameStatus === "won" && <ResultModal onReset={reset} winner={winner} />}
-      {gameStatus === "draw" && <ResultModal onReset={reset} winner="tie" />}
+      {gameStatus === "won" && <TicResultModal onReset={reset} winner={winner} />}
+      {gameStatus === "draw" && <TicResultModal onReset={reset} winner="tie" />}
       <Container display="flex" flexDirection={"column"} maxW="500px" w="100%" overflow="hidden" alignItems="center" h="100vh">
         <Flex  
           w="full" 
@@ -121,7 +123,7 @@ const ComputerBoard = () => {
             borderBottom="4px" 
             borderBottomColor={playerTurn===true?colorMapping[userSymbol]:"transparent"} 
             justifyContent="center" alignItems={"center"}>
-            <Text fontSize="1.1rem">{userSymbol}(You)</Text>
+            <Text fontSize="1.1rem">{userSymbol}({ctx.currentUser})</Text>
             <Text fontWeight={"bold"} fontSize={"1.5rem"}>{userScore}</Text>
           </Flex>
           <Flex 

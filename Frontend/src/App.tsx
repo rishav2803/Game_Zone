@@ -13,6 +13,7 @@ import PlayerContext from "./context/player-context";
 import {RenderIf} from "./components/RenderIf";
 import ResultModal from "./components/ui/Modal";
 import NameModal from "./components/ui/NameModal";
+import SlidePuzzle from "./components/SlidePuzzle";
 function App() {
   const ctx=useContext(PlayerContext);
   console.log(ctx?.currentUser);
@@ -28,6 +29,7 @@ function App() {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/tic-tac-toe" element={<ComputerBoard />} />
+          <Route path="/slide-puzzle" element={<SlidePuzzle  numbers={[1, 2, 3, 4, 5, 6, 7, 8, 0]}/>} />
           <Route path="/rock-paper-scissors" element={<RPS/>} />
           <Route path="/create-game" element={<CreateGame />} />
           <Route path="/join-game" element={<JoinGame />} />

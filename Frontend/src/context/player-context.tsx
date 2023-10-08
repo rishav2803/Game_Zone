@@ -7,9 +7,7 @@ interface PlayerContextType {
   setSymbol: (val: string) => void;
 }
 
-const PlayerContext = React.createContext<PlayerContextType | undefined>(
-  undefined
-);
+const PlayerContext = React.createContext<PlayerContextType>({} as PlayerContextType);
 
 export default PlayerContext;
 

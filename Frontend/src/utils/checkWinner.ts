@@ -31,8 +31,7 @@ export const getRandomSymbol = () => {
   return symbols[randomIndex];
 };
 
-export const checkWinnerRps = (userChoice: rpsState, computerChoice: rpsState) => {
-
+export const checkWinnerRps = (userChoice: rpsState,userName:string, computerChoice: rpsState) => {
   if(Object.keys(userChoice).length>1 && Object.keys(computerChoice).length>1){
     if (userChoice.src === computerChoice.src) {
       return "tie";
@@ -41,7 +40,7 @@ export const checkWinnerRps = (userChoice: rpsState, computerChoice: rpsState) =
       (userChoice.src === RockImg && computerChoice.src === ScissorsImg) ||
     (userChoice.src === PaperImg && computerChoice.src === RockImg)
     ) {
-      return "USER";
+      return userName;
     } else {
       return "CPU";
     }
