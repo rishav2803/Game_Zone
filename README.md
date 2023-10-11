@@ -2,13 +2,14 @@
 This repository contains the source code for my website, which hosts popular games like Tic Tac Toe and Rock Paper Scissors. The website offers both single-player mode against a computer opponent and multiplayer mode for challenging friends or other online players.
 
 **Home Page:**
-![Screenshot (809)](https://github.com/rishav2803/Game_Zone/assets/95288017/c017933a-4430-44e0-9896-4cf17909c3ac)
+![image](https://github.com/rishav2803/Game_Zone/assets/95288017/88c31734-d323-4f8e-9539-341d8a2e55f9)
 
 **Tic Tac Toe:**
-![Screenshot (812)](https://github.com/rishav2803/Game_Zone/assets/95288017/cc19cfe3-c7d1-4c4b-9956-5a7dc63589d3)
+![image](https://github.com/rishav2803/Game_Zone/assets/95288017/ad853b59-9dbe-411e-8c26-723d1c237e49)
 
 **Rock Paper Scissors:**
-![Screenshot (811)](https://github.com/rishav2803/Game_Zone/assets/95288017/8d444b95-277b-41db-8681-56092abdd7df)
+![image](https://github.com/rishav2803/Game_Zone/assets/95288017/19fcb304-4694-4f8d-b795-404ad0ac69ed)
+
 
 
 
